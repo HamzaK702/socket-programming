@@ -1,3 +1,4 @@
+from pickle import TRUE
 import socket
 import pyaudio
 import tkinter as tk
@@ -12,10 +13,16 @@ RATE = 44100
 CHUNK = 1024
 HOST = '127.0.0.1' # Change this to the IP address or hostname of the server
 PORT = 12345
-
+h=False
 # Create a socket object
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client_socket.connect((HOST, PORT))
+while not h:
+    try:
+        client_socket.connect((HOST, PORT))
+        h=True
+    except Exception as e:
+            tk.messagebox.showerror("Error", f"Server is not online")
+               
 
 def choose_file():
     file_path = filedialog.askopenfilename()
@@ -30,16 +37,16 @@ def send_file():
         return
 
     try:
-        # # Define the server address and port
-        # SERVER_ADDRESS = '127.0.0.1'  # localhost
-        # SERVER_PORT = 12345
+        # Define the server address and port
+        SERVER_ADDRESS = '127.0.0.1'  # localhost
+        SERVER_PORT = 12345
 
-        # # Create a socket object
-        # client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        # Create a socket object
+        client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-        # # Connect to the server
-        # client_socket.connect((SERVER_ADDRESS, SERVER_PORT))
-
+        # Connect to the server
+        client_socket.connect((SERVER_ADDRESS, SERVER_PORT))
+        
         # Get the file name from the file path
         file_name = os.path.basename(file_path)
 
@@ -55,7 +62,7 @@ def send_file():
                 file_size -= len(data)
 
         print("File sent successfully.")
-
+        print(f"file sent to {client_socket}")
         # Close the socket
         client_socket.close()
 
@@ -81,10 +88,12 @@ def stop_client():
     root.quit()
 
 # Function to handle audio playback from the server
-def play_audio():
-    while True:
-        data = client_socket.recv(CHUNK)
-        stream_out.write(data)
+if(h):
+    print("came here")
+    def play_audio():
+        while True:
+            data = client_socket.recv(CHUNK)
+            stream_out.write(data)
 
 # Create a GUI window
 root = tk.Tk()
@@ -97,6 +106,8 @@ label.pack(pady=20)
 # Create file path entry
 entry_file_path = tk.Entry(root, width=50)
 entry_file_path.pack(pady=10)
+
+ 
 
 # Create buttons for choosing file and sending file
 btn_choose_file = tk.Button(root, text="Choose File", command=choose_file)
@@ -117,8 +128,9 @@ stop_button = tk.Button(root, text="Stop Client", font=("Helvetica", 14), comman
 stop_button.pack()
 
 # Start audio playback thread
-audio_thread = threading.Thread(target=play_audio)
-audio_thread.start()
+if(h):
+    audio_thread = threading.Thread(target=play_audio)
+    audio_thread.start()
 
 # Start the GUI event loop
 root.mainloop()

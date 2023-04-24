@@ -64,21 +64,26 @@ def handle_clients():
     
          # Receive the file name and file size from the client
          # if not file_name.endswith(".mp3"):
-    #     file_info = client_socket.recv(1024).decode()
-    #     file_name, file_size = file_info.split('|')
+ 
+        while True:
+            client_socket, client_addr = server_socket.accept()
+            client_sockets.append(client_socket)
 
-    # # Convert file size to integer
-    #     file_size = int(file_size)
+            file_info = client_socket.recv(1024).decode()
+            file_name, file_size = file_info.split('|')
 
-    # # Create a new file to write the received data
-    #     with open(file_name, 'wb') as file:
-    #     # Loop to receive file data in chunks
-    #      while file_size > 0:
-    #         data = client_socket.recv(1024)
-    #         file.write(data)
-    #         file_size -= len(data)
+    # Convert file size to integer
+            file_size = int(file_size)
 
-    #      print(f"File '{file_name}' received and saved successfully.")
+    # Create a new file to write the received data
+            with open(file_name, 'wb') as file:
+        # Loop to receive file data in chunks
+             while file_size > 0:
+                data = client_socket.recv(1024)
+                file.write(data)
+                file_size -= len(data)
+
+            print(f"File '{file_name}' received and saved successfully.")
  
 
 # Create a GUI window
@@ -86,7 +91,7 @@ root = tk.Tk()
 root.title("Audio Server")
 
 # Add a label
-label = tk.Label(root, text="Select an audio file to play:", font=("Helvetica", 16))
+label = tk.Label(root, text="SERVER", font=("Helvetica", 16))
 label.pack(pady=20)
 
 # Function to open file dialog and select a file
@@ -104,8 +109,8 @@ select_button = tk.Button(root, text="Select Audio to broadcast", font=("Helveti
 select_button.pack()
 
 
-#broadcast_button = tk.Button(root, text="Start broadcasting audio", font=("Helvetica", 14), command=broadcast)
-#broadcast_button.pack()
+# broadcast_button = tk.Button(root, text="Receive File", font=("Helvetica", 14), command=receive_file)
+# broadcast_button.pack()
 # Add a button to stop the server
 stop_button = tk.Button(root, text="Stop Server", font=("Helvetica", 14), command=stop_server)
 stop_button.pack()
