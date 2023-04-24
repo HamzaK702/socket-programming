@@ -30,15 +30,15 @@ def send_file():
         return
 
     try:
-        # # Define the server address and port
-        # SERVER_ADDRESS = '127.0.0.1'  # localhost
-        # SERVER_PORT = 12345
+        # Define the server address and port
+        SERVER_ADDRESS = '127.0.0.1'  # localhost
+        SERVER_PORT = 12345
 
-        # # Create a socket object
-        # client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        # Create a socket object
+        client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-        # # Connect to the server
-        # client_socket.connect((SERVER_ADDRESS, SERVER_PORT))
+        # Connect to the server
+        client_socket.connect((SERVER_ADDRESS, SERVER_PORT))
 
         # Get the file name from the file path
         file_name = os.path.basename(file_path)
@@ -55,7 +55,7 @@ def send_file():
                 file_size -= len(data)
 
         print("File sent successfully.")
-
+        print(f"file sent to {client_socket}")
         # Close the socket
         client_socket.close()
 
@@ -97,6 +97,8 @@ label.pack(pady=20)
 # Create file path entry
 entry_file_path = tk.Entry(root, width=50)
 entry_file_path.pack(pady=10)
+
+ 
 
 # Create buttons for choosing file and sending file
 btn_choose_file = tk.Button(root, text="Choose File", command=choose_file)
