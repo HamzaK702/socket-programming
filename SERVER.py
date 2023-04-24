@@ -104,7 +104,7 @@ def handle_clients():
             
             recv_checksum = client_socket.recv(1024).decode()
             if(recv_checksum==verify_checksum(data)):
-                print(f"{file_name} is the received without any errors. Checksum is verified." )
+                print(f"{file_name} is received without any errors. Checksum is verified." )
             else: print("File received is probably corrupt since Checksum failed.")
              
            
