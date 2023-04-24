@@ -5,6 +5,8 @@ import tkinter as tk
 import threading 
 import os
 from tkinter import filedialog
+import hashlib
+
 
 # Constants
 FORMAT = pyaudio.paInt16
@@ -29,6 +31,20 @@ def choose_file():
     file_path = filedialog.askopenfilename()
     entry_file_path.delete(0, tk.END)
     entry_file_path.insert(tk.END, file_path)
+
+def calculate_checksum(data):
+    """
+    Calculates the checksum of data using MD5 hash algorithm.
+
+    Args:
+        data (bytes): Data for which checksum needs to be calculated.
+
+    Returns:
+        str: Checksum value as hexadecimal string.
+    """
+    checksum = hashlib.md5()
+    checksum.update(data)
+    return  checksum.hexdigest()
 
 
 def send_file():
@@ -59,9 +75,13 @@ def send_file():
         with open(file_path, 'rb') as file:
             while file_size > 0:
                 data = file.read(1024)
-                client_socket.send(data)
+                checksum = calculate_checksum(data)
+                # data_with_checksum = data + checksum.encode()
+                client_socket.sendall(data)
                 file_size -= len(data)
-
+                # justChecksum = data_with_checksum.split('|')
+        client_socket.send(f"{checksum}".encode())
+        print(f"CHECKSUM IS: {checksum}")
         print("File sent successfully.")
         print(f"file sent to {client_socket}")
         # Close the socket

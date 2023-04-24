@@ -5,6 +5,7 @@ from tkinter import filedialog
 import pyaudio
 import wave
 import os
+import hashlib
 
 # Constants
 FORMAT = pyaudio.paInt16
@@ -70,11 +71,27 @@ def handle_clients():
             client_sockets.append(client_socket)
 
             file_info = client_socket.recv(1024).decode()
+            print(f"{file_info}" )
             file_name, file_size = file_info.split('|')
-
+             
     # Convert file size to integer
             file_size = int(file_size)
 
+            def verify_checksum(data):
+                """
+                Verifies the MD5 checksum of data with the received checksum.
+
+                Args:
+                    data (bytes): Data for which checksum needs to be verified.
+                    received_checksum (str): Checksum received from the client.
+
+                Returns:
+                    bool: True if the checksum is verified, False otherwise.
+                """
+                checksum = hashlib.md5()
+                checksum.update(data)
+                calculated_checksum = checksum.hexdigest()
+                return calculated_checksum
     # Create a new file to write the received data
             with open(file_name, 'wb') as file:
         # Loop to receive file data in chunks
@@ -82,9 +99,17 @@ def handle_clients():
                 data = client_socket.recv(1024)
                 file.write(data)
                 file_size -= len(data)
+                
+            
+            
+            recv_checksum = client_socket.recv(1024).decode()
+            if(recv_checksum==verify_checksum(data)):
+                print(f"{file_name} is the received without any errors. Checksum is verified." )
+            else: print("File received is probably corrupt since Checksum failed.")
+             
+           
+            
 
-            print(f"File '{file_name}' received and saved successfully.")
- 
 
 # Create a GUI window
 root = tk.Tk()
