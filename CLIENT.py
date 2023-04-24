@@ -20,8 +20,9 @@ while not h:
     try:
         client_socket.connect((HOST, PORT))
         h=True
+        print("Client connected to server")
     except Exception as e:
-            tk.messagebox.showerror("Error", f"Server is not online")
+            tk.messagebox.showerror("Error", "Server is not online")
                
 
 def choose_file():
@@ -89,7 +90,7 @@ def stop_client():
 
 # Function to handle audio playback from the server
 if(h):
-    print("came here")
+    
     def play_audio():
         while True:
             data = client_socket.recv(CHUNK)
